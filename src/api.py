@@ -24,16 +24,21 @@ def get_sensors(station_id):
     return data["Lista stanowisk pomiarowych dla podanej stacji"]
 
 def get_measurements(sensor_id):
-    url = f"{core_url}/data/getData/{station_id}"
+    url = f"{core_url}/data/getData/{sensor_id}"
 
     response = requests.get(url)
 
     data =  response.json()
-    df = pd.DataFrame(data["values"])
 
-    df["value"] = pd.to_numeric(df["value"], errors = "coerce")
-    df = df.dropna()
+    print(f"\nSensor ID: {sensor_id}")
+    print(data)
 
-    return df
+    if "Lista danych pomiarowych" not in data:
+        print(data)
+        return pd.DataFrame()
+
+    return pd.DataFrame(data["Lista danych pomiarowych"])
+    
+    
 
 
