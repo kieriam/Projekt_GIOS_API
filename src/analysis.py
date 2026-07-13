@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 
 def calculate_stats(df):
 
@@ -25,7 +26,7 @@ def compare_stations(df1, station1_name,df2, station2_name, pollutant):
         marker="o"
     )
 
-    plt.tittle(f"Porównanie stacji - {pollutant}")
+    plt.title(f"Porównanie stacji - {pollutant}")
 
     plt.xlabel("Data")
     plt.ylabel("µg/m³")
@@ -38,4 +39,3 @@ def compare_stations(df1, station1_name,df2, station2_name, pollutant):
     plt.tight_layout()
 
     plt.show()
-    
