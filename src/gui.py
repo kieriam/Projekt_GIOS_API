@@ -13,9 +13,18 @@ class AirQualityApp:
         self.root = tk.Tk()
 
         self.root.title("Analiza jakości powietrza")
-        self.root.geometry("900x600")
+        self.root.geometry("1200x800")
 
         stations = get_stations()
+
+        self.left_frame = tk.Frame(self.root)
+        self.left_frame.grid(row=0, column = 0, padx=10, pady=10)
+
+        self.right_frame = tk.Frame(self.root)
+        self.right_frame.grid(row=0, column = 1, padx=10, pady=10)
+
+        self.bottom_frame = tk.Frame(self.root)
+        self.bottom_frame.grid(row=1, column = 0,columnspan=2, padx=10, pady=10)
 
         self.station_map = dict(
             zip(
@@ -25,12 +34,12 @@ class AirQualityApp:
         )
 
         tk.Label(
-            self.root,
+            self.left_frame,
             text = "Wybierz stację 1"
         ).pack()
 
         self.station_combo = ttk.Combobox(
-            self.root,
+            self.left_frame,
             values=list(self.station_map.keys()),
             width=60
         )
@@ -38,12 +47,12 @@ class AirQualityApp:
         self.station_combo.pack()
 
         tk.Label(
-            self.root,
+            self.right_frame,
             text = "Wybierz stację 2"
         ).pack()
 
         self.station2_combo = ttk.Combobox(
-            self.root,
+            self.right_frame,
             values=list(self.station_map.keys()),
             width=60
         )
@@ -51,72 +60,120 @@ class AirQualityApp:
         self.station2_combo.pack()
 
         tk.Label(
-            self.root,
-            text = "Wybierz statystykę"
+            self.bottom_frame,
+            text = "Wybierz parametr do wykresu"
         ).pack()
 
-        #self.pollutant_combo =ttk.Combobox(
-         #   self.root,
-          #  values = ["PM10","PM2.5","NO2","NO","NOx","O3","SO2","CO","C6H6","BaP(PM10)"],
-           # width=60
-        #)
+        self.pollutant_combo =ttk.Combobox(
+            self.bottom_frame,
+            values = ["PM10","PM2.5","NO2","NO","NOx","O3","SO2","CO","C6H6","BaP(PM10)"],
+            width=60
+        )
         self.pollutant_combo.pack()
 
         tk.Button(
-            self.root,
-            text="Pobierz dane",
-            command=self.download_data
-        ).pack(pady=10)
+            self.left_frame,
+            text="Pobierz dane 1 stacji",
+            command=self.download_station1
+        ).pack(pady=5)
+
+        tk.Button(
+            self.right_frame,
+            text="Pobierz dane 2 stacji",
+            command=self.download_station2
+        ).pack(pady=5)
 
         self.text = tk.Text(
-            self.root,
+            self.left_frame,
             height=10,
             width=50
         )
         self.text.pack()
 
+        self.text2 = tk.Text(
+            self.right_frame,
+            height=10,
+            width=50
+        )
+        self.text2.pack()
+
+        #tk.Button(
+         #   self.root,
+          #  text="Oblicz statystyki",
+           # command=self.calculate_statistics
+        #).pack(pady=10)
+
         tk.Button(
-            self.root,
-            text="Oblicz statystyki",
-            command=self.calculate_statistics
-        ).pack(pady=10)
+            self.left_frame,
+            text="Statystyki stacji 1",
+            command=self.calculate_statistics_station1
+        ).pack(pady=5)
+
+        tk.Button(
+            self.right_frame,
+            text="statystyki stacji 2",
+            command=self.calculate_statistics_station2
+        ).pack(pady=5)
 
         self.stats_text = tk.Text(
-            self.root,
+            self.left_frame,
             height=10,
             width=50
         )
         self.stats_text.pack(pady=10)
 
+        self.stats_text2 = tk.Text(
+            self.right_frame,
+            height=10,
+            width=50
+        )
+        self.stats_text2.pack(pady=10)
+
         tk.Button(
-            self.root,
+            self.bottom_frame,
             text="Porównaj stacje",
            # command= self.compare_two_stations
-            command= self.compare_stations
+            command= self.compare_statistics
         ).pack(pady=10)
 
-    def download_data(self):
-        station_name = self.station_combo.get()
+        self.compare_text = tk.Text(
+            self.bottom_frame, 
+            width=80,
+            height=8
+        )
+        self.compare_text.pack()
 
-        if not station_name:
-            self.text.insert(tk.END, "Nie wybrano stacji\n")
+    def download_data(self, station_combo, textbox):
+
+        textbox.delete("1.0", tk.END)
+
+        station = station_combo.get()
+
+        if station == "":
+            textbox.insert(tk.END, "Nie wybrano stacji\n")
             return
-        
-        station_id = self.station_map[station_name]
+
+        station_id = self.station_map[station]
 
         sensors = get_sensors(station_id)
-       #print(type(sensors))
-       #print(sensors)
-       #self.text.delete("1.0",tk.END)
-
-        #sensors = get_sensors(station_id)
 
         for sensor in sensors:
-            self.text.insert(
+
+            sensor_id = sensor["Identyfikator stanowiska"]
+            pollutant = sensor["Wskaźnik - kod"]
+
+            df = get_measurements(sensor_id)
+
+            textbox.insert(
                 tk.END,
-                f"{sensor['Wskaźnik - kod']}"
-                f"(ID:{sensor['Identyfikator stanowiska']})\n"
+                f"\n===== {pollutant} =====\n"
             )
+
+            if df.empty:
+                textbox.insert(tk.END,"Brak danych\n")
+            else:
+                textbox.insert(tk.END,df.to_string(index=False))
+                textbox.insert(tk.END,"\n")
 
     def find_sensor(self, station_id,pollutant):
         sensors = get_sensors(station_id)
@@ -176,52 +233,150 @@ class AirQualityApp:
         )
 
 
-    def calculate_statistics(self):
-        station_name = self.station_combo.get()
+    def calculate_statistics(self, station_combo, textbox):
+        station_name = station_combo.get()
 
         if not station_name:
-            self.stats_text.insert(tk.END, "Najpierw wybierz stację\n")
+            textbox.insert(tk.END, "Najpierw wybierz stację\n")
             return
         
+        textbox.delete("1.0",tk.END)
+
         station_id = self.station_map[station_name]
 
         sensors = get_sensors(station_id)
 
-        pm10_sensor = None
-
         for sensor in sensors:
-            if sensor["Wskaźnik - kod"] == "PM10":
-                pm10_sensor = sensor["Identyfikator stanowiska"]
-                break
 
-        if pm10_sensor is None:
-            self.stats_text.insert(tk.END, "\nBrak czujnika PM10\n")
+            pollutant = sensor["Wskaźnik - kod"]
+
+            sensor_id = sensor["Identyfikator stanowiska"]
+
+            df = get_measurements(sensor_id)
+
+            if df.empty:
+                continue
+
+            stats = calculate_stats(df)
+
+            textbox.insert(
+                tk.END,
+                f"\n====={pollutant}=====\n"
+            )
+
+            for key, value in stats.items():
+
+                textbox.insert(
+                    tk.END,
+                    f"{key}:{value}\n"
+                )
+
+    def calculate_statistics_station1(self):
+        self.calculate_statistics(
+            self.station_combo,
+            self.stats_text
+        )
+
+    def calculate_statistics_station2(self):
+        self.calculate_statistics(
+            self.station2_combo,
+            self.stats_text2
+        )
+
+    def download_station1(self):
+        self.download_data(
+            self.station_combo,
+            self.text
+        )
+
+    def download_station2(self):
+        self.download_data(
+            self.station2_combo,
+            self.text2
+        )
+
+    def compare_statistics(self):
+
+        self.compare_text.delete("1.0", tk.END)
+
+        station1 = self.station_combo.get()
+        station2 = self.station2_combo.get()
+
+        if not station1 or not station2:
+            self.compare_text.insert(
+                tk.END,
+                "Wybierz obie stacje.\n"
+            )
             return
 
-        df = get_measurements(pm10_sensor)
+        station1_id = self.station_map[station1]
+        station2_id = self.station_map[station2]
+
+        sensors1 = get_sensors(station1_id)
+        sensors2 = get_sensors(station2_id)
+
+        for sensor in sensors1:
+            pollutant = sensor["Wskaźnik - kod"]
+            sensor_id1 = sensor["Identyfikator stanowiska"]
+
+            sensor_id2 = self.find_sensor(
+                station2_id,
+                pollutant
+            )
+
+            if sensor_id2 is None:
+                continue
+            
+            df1 = get_measurements(sensor_id1)
+            df2 = get_measurements(sensor_id2)
+
+            if df1.empty or df2.empty:
+                continue
+
+            stats1 = calculate_stats(df1)
+            stats2 = calculate_stats(df2)
+
+            self.compare_text.insert(
+                tk.END,
+                f"\n====={pollutant}=====\n"
+            )
+
+            for key in stats1:
+                self.compare_text.insert(
+                    tk.END,
+                    f"{key}:{stats1[key]} | {stats2[key]}\n"
+                )
+
+    def plot_station1(self):
+
+        station_name = self.station_combo.get()
+        pollutant = self.pollutant_combo.get()
+
+        if not station_name or not pollutant:
+            return
+
+        station_id = self.station_map[station_name]
+
+        sensor_id = self.find_sensor(
+            station_id,
+            pollutant
+        )
+
+        if sensor_id is None:
+            self.text.insert(
+                tk.END,
+                "\nBrak takiego parametru w stacji\n"
+            )
+            return
+        
+        df = get_measurements(sensor_id)
 
         if df.empty:
-            self.stats_text.insert(
+            self.text.insert(
                 tk.END,
-                "\nBrak danych pomiarowych.\n"
+                "\nBrak danych pomiarowych\n"
             )
             return
-
-        stats = calculate_stats(df)
-
-        self.stats_text.insert(tk.END,"\n---Statystyki PM10 ---\n")
-
-        for key,value in stats.items():
-            self.stats_text.insert(
-                tk.END,
-                f"{key}:{value}\n"
-            )
-
-       #for sensor in sensors["Lista stanowisk pomiarowych"]:
-          # self.text.insert(
-         #      tk.END,
-         #      f"{sensor['id']} - {sensor['param']['paramCode']}\n"
-          # )
 
     def run(self):
         self.root.mainloop()
