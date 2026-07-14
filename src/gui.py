@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
+import matplotlib.pyplot as plt
+import pandas as pd
 
 from api import get_stations
 from api import get_sensors
@@ -13,7 +15,7 @@ class AirQualityApp:
         self.root = tk.Tk()
 
         self.root.title("Analiza jakości powietrza")
-        self.root.geometry("1200x800")
+        self.root.geometry("1200x900")
 
         stations = get_stations()
 
@@ -64,12 +66,7 @@ class AirQualityApp:
             text = "Wybierz parametr do wykresu"
         ).pack()
 
-        self.pollutant_combo =ttk.Combobox(
-            self.bottom_frame,
-            values = ["PM10","PM2.5","NO2","NO","NOx","O3","SO2","CO","C6H6","BaP(PM10)"],
-            width=60
-        )
-        self.pollutant_combo.pack()
+        
 
         tk.Button(
             self.left_frame,
@@ -129,6 +126,13 @@ class AirQualityApp:
         )
         self.stats_text2.pack(pady=10)
 
+        self.pollutant_combo =ttk.Combobox(
+            self.bottom_frame,
+            values = ["PM10","PM2.5","NO2","NO","NOx","O3","SO2","CO","C6H6","BaP(PM10)"],
+            width=60
+        )
+        self.pollutant_combo.pack()
+
         tk.Button(
             self.bottom_frame,
             text="Porównaj stacje",
@@ -142,6 +146,18 @@ class AirQualityApp:
             height=8
         )
         self.compare_text.pack()
+
+        tk.Button(
+            self.left_frame,
+            text="Wykres stacji 1",
+            command=self.plot_station1
+        ).pack(pady=5)
+
+        tk.Button(
+            self.right_frame,
+            text="Wykres stacji 2",
+            command=self.plot_station2
+        ).pack(pady=5)
 
     def download_data(self, station_combo, textbox):
 
@@ -313,7 +329,7 @@ class AirQualityApp:
         station2_id = self.station_map[station2]
 
         sensors1 = get_sensors(station1_id)
-        sensors2 = get_sensors(station2_id)
+        #sensors2 = get_sensors(station2_id)
 
         for sensor in sensors1:
             pollutant = sensor["Wskaźnik - kod"]
@@ -347,9 +363,9 @@ class AirQualityApp:
                     f"{key}:{stats1[key]} | {stats2[key]}\n"
                 )
 
-    def plot_station1(self):
+    def plot_station(self, station_combo, textbox):
 
-        station_name = self.station_combo.get()
+        station_name = station_combo.get()
         pollutant = self.pollutant_combo.get()
 
         if not station_name or not pollutant:
@@ -363,7 +379,7 @@ class AirQualityApp:
         )
 
         if sensor_id is None:
-            self.text.insert(
+            textbox.insert(
                 tk.END,
                 "\nBrak takiego parametru w stacji\n"
             )
@@ -372,11 +388,51 @@ class AirQualityApp:
         df = get_measurements(sensor_id)
 
         if df.empty:
-            self.text.insert(
+            textbox.insert(
                 tk.END,
                 "\nBrak danych pomiarowych\n"
             )
             return
+
+        df["Data"] = pd.to_datetime(df["Data"])
+
+        plt.figure(figsize=(10,5))
+
+        plt.plot(
+            df["Data"],
+            df["Wartość"],
+            marker="o",
+            label=station_name
+        )
+
+        plt.title(
+            f"{station_name} - {pollutant}"
+        )
+
+        plt.legend()
+
+        plt.xlabel("Data")
+        plt.ylabel("µg/m³")
+
+        plt.xticks(rotation=45)
+
+        plt.grid()
+
+        plt.tight_layout()
+
+        plt.show()
+
+    def plot_station1(self):
+        self.plot_station(
+            self.station_combo,
+            self.text
+        )
+
+    def plot_station2(self):
+        self.plot_station(
+            self.station2_combo,
+            self.text2
+        )
 
     def run(self):
         self.root.mainloop()
