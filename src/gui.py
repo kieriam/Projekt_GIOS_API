@@ -50,6 +50,18 @@ class AirQualityApp:
 
         self.station2_combo.pack()
 
+        tk.Label(
+            self.root,
+            text = "Wybierz statystykę"
+        ).pack()
+
+        #self.pollutant_combo =ttk.Combobox(
+         #   self.root,
+          #  values = ["PM10","PM2.5","NO2","NO","NOx","O3","SO2","CO","C6H6","BaP(PM10)"],
+           # width=60
+        #)
+        self.pollutant_combo.pack()
+
         tk.Button(
             self.root,
             text="Pobierz dane",
@@ -79,7 +91,8 @@ class AirQualityApp:
         tk.Button(
             self.root,
             text="Porównaj stacje",
-            command= self.compare_two_stations
+           # command= self.compare_two_stations
+            command= self.compare_stations
         ).pack(pady=10)
 
     def download_data(self):
@@ -119,7 +132,7 @@ class AirQualityApp:
         station1_name = self.station_combo.get()
         station2_name = self.station2_combo.get()
 
-        pollutant = "PM10"
+        pollutant = "PM10" #self.pollutant_combo.get()
 
         if not station1_name or not station2_name:
             return
