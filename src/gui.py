@@ -135,6 +135,13 @@ class AirQualityApp:
 
         tk.Button(
             self.bottom_frame,
+            text="Porównaj wykresy",
+            command= self.compare_two_stations
+            #command= self.compare_statistics
+        ).pack(pady=10)
+
+        tk.Button(
+            self.bottom_frame,
             text="Porównaj stacje",
            # command= self.compare_two_stations
             command= self.compare_statistics
@@ -205,9 +212,14 @@ class AirQualityApp:
         station1_name = self.station_combo.get()
         station2_name = self.station2_combo.get()
 
-        pollutant = "PM10" #self.pollutant_combo.get()
+        pollutant = self.pollutant_combo.get()
 
-        if not station1_name or not station2_name:
+        if not station1_name or not station2_name or not pollutant:
+            self.compare_text.delete("1.0", tk.END)
+            self.compare_text.insert(
+                tk.END,
+                "Wybierz obie stacje oraz parametr."
+            )
             return
 
         station1_id = self.station_map[station1_name]
