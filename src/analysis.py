@@ -26,6 +26,13 @@ def compare_stations(df1, station1_name,df2, station2_name, pollutant):
         marker="o"
     )
 
+    plt.plot(
+        df2["Data"],
+        df2["Wartość"],
+        label = station2_name,
+        marker="o"
+    )
+
     plt.title(f"Porównanie stacji - {pollutant}")
 
     plt.xlabel("Data")
