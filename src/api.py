@@ -34,7 +34,7 @@ def get_measurements(sensor_id):
     #print(data)
 
     if "Lista danych pomiarowych" not in data:
-        print(data)
+       # print(data)
         return pd.DataFrame()
 
     return pd.DataFrame(data["Lista danych pomiarowych"])
