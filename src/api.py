@@ -30,8 +30,8 @@ def get_measurements(sensor_id):
 
     data =  response.json()
 
-    print(f"\nSensor ID: {sensor_id}")
-    print(data)
+    #print(f"\nSensor ID: {sensor_id}")
+    #print(data)
 
     if "Lista danych pomiarowych" not in data:
         print(data)
