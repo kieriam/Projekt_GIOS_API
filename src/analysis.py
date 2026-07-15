@@ -3,6 +3,17 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 def calculate_stats(df):
+    """
+    Funkcja oblicza podstawowe statystyki dla wprowadzonych danych
+
+    Args:
+        df(pd.DataFrame): DataFrame zawierający wartości pomiarów.
+
+    Returns:
+        dict: Słownik zawierający średnią, minimum, maksimum, medianę, odchylenie standardowe.
+    """
+    if df.empty:
+        return {}
 
     return {
         "Średnia": round(df["Wartość"].mean(),2),
@@ -13,7 +24,16 @@ def calculate_stats(df):
     }
 
 def compare_stations(df1, station1_name,df2, station2_name, pollutant):
+    """
+    Tworzy wykres porównujący poziom wybranego zanieczyszczenia dla dwóch stacji pomiarowych.
 
+    Args:
+        df1 (pd.DataFrame): Dane pomiarowe pierwszej stacji.
+        station1_name (str): Nazwa pierwszej stacji.
+        df2 (pd.DataFrame): Dane pomiarowe drugiej stacji.
+        station2_name (str): Nazwa drugiej stacji.
+        pollutant(str): Kod badanego zanieczyszczenia.
+    """
     df1["Data"] = pd.to_datetime(df1["Data"])
     df2["Data"] = pd.to_datetime(df2["Data"])
 
