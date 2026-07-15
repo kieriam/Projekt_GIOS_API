@@ -28,6 +28,7 @@ class AirQualityApp:
 
         stations = get_stations()
 
+        # utworzenie ramek aplikacji
         self.left_frame = tk.Frame(self.root)
         self.left_frame.grid(row=0, column = 0, padx=10, pady=10)
 
@@ -57,7 +58,7 @@ class AirQualityApp:
             self.left_frame,
             text = "Wybierz stację 1"
         ).pack()
-
+        # wybór 1 stacji pomiarowej
         self.station_combo = ttk.Combobox(
             self.left_frame,
             values=list(self.station_map.keys()),
@@ -70,7 +71,7 @@ class AirQualityApp:
             self.right_frame,
             text = "Wybierz stację 2"
         ).pack()
-
+        # wybór 2 stacji pomiarowej
         self.station2_combo = ttk.Combobox(
             self.right_frame,
             values=list(self.station_map.keys()),
@@ -84,8 +85,7 @@ class AirQualityApp:
             text = "Wybierz parametr do wykresu"
         ).pack()
 
-        
-
+        #przyciski odpowiadające za pobieranie danych
         tk.Button(
             self.left_frame,
             text="Pobierz dane 1 stacji",
@@ -98,6 +98,7 @@ class AirQualityApp:
             command=self.download_station2
         ).pack(pady=5)
 
+        #pola tekstowe
         text_frame = tk.Frame(self.left_frame)
         text_frame.pack()
 
@@ -132,6 +133,7 @@ class AirQualityApp:
         scrollbar2.pack(side=tk.RIGHT, fill=tk.Y)
         self.text2.pack(side=tk.LEFT)
 
+        #przyciski odpowiedzialne za obliczanie statystyk
         tk.Button(
             self.left_frame,
             text="Statystyki stacji 1",
@@ -144,6 +146,7 @@ class AirQualityApp:
             command=self.calculate_statistics_station2
         ).pack(pady=5)
 
+        #Pola tekstowe przeznaczone dla statystyk
         text_frame3 = tk.Frame(self.left_frame)
         text_frame3.pack()
 
@@ -178,7 +181,7 @@ class AirQualityApp:
         scrollbar4.pack(side=tk.RIGHT, fill=tk.Y)
         self.stats_text2.pack(side=tk.LEFT)
 
-
+        #wybór wskaźnika zanieczyszczenia
         self.pollutant_combo =ttk.Combobox(
             self.bottom_mini_frame,
             values = ["PM10","PM2.5","NO2","NO","NOx","O3","SO2","CO","C6H6","BaP(PM10)"],
@@ -186,6 +189,20 @@ class AirQualityApp:
         )
         self.pollutant_combo.pack()
 
+        #przyciski prezentujące wykresy w nowym oknie
+        tk.Button(
+            self.left_mini_frame,
+            text="Wykres stacji 1",
+            command=self.plot_station1
+        ).pack(pady=5)
+
+        tk.Button(
+            self.right_mini_frame,
+            text="Wykres stacji 2",
+            command=self.plot_station2
+        ).pack(pady=5)
+
+        #przyciski wywołujące porównanie danych
         tk.Button(
             self.bottom_frame,
             text="Porównaj wykresy",
@@ -217,17 +234,6 @@ class AirQualityApp:
         scrollbar5.pack(side=tk.RIGHT, fill=tk.Y)
         self.compare_text.pack(side=tk.LEFT)
 
-        tk.Button(
-            self.left_mini_frame,
-            text="Wykres stacji 1",
-            command=self.plot_station1
-        ).pack(pady=5)
-
-        tk.Button(
-            self.right_mini_frame,
-            text="Wykres stacji 2",
-            command=self.plot_station2
-        ).pack(pady=5)
 
     def download_data(self, station_combo, textbox):
         """
@@ -243,12 +249,22 @@ class AirQualityApp:
         station = station_combo.get()
 
         if station == "":
-            textbox.insert(tk.END, "Nie wybrano stacji\n")
+            textbox.insert(
+                tk.END,
+                "\nNie wybrano stacji\n"
+            )
             return
 
         station_id = self.station_map[station]
 
         sensors = get_sensors(station_id)
+
+        if not sensors:
+            textbox.insert(
+                tk.END,
+                "\nNie znaleziono danych dla wybranej stacji.\n"
+            )
+            return
 
         for sensor in sensors:
 
@@ -263,7 +279,9 @@ class AirQualityApp:
             )
 
             if df.empty:
-                textbox.insert(tk.END,"Brak danych\n")
+                textbox.insert(
+                    tk.END,
+                    "Brak danych\n")
             else:
                 textbox.insert(tk.END,df.to_string(index=False))
                 textbox.insert(tk.END,"\n")
@@ -321,9 +339,9 @@ class AirQualityApp:
         )
 
         if sensor1 is None or sensor2 is None:
-            self.text.insert(
+            self.compare_text.insert(
                 tk.END,
-                "\nNie znaleziona czujnikaPM10\n"
+                "\nBrak czujnika {pollutant} w jednej ze stacji.\n"
             )
             return
         
@@ -331,7 +349,7 @@ class AirQualityApp:
         df2 = get_measurements(sensor2)
 
         if df1.empty or df2.empty:
-            self.text.insert(
+            self.compare_text.insert(
                 tk.END,
                 "\nBrak danych pomiarowych\n"
             )
@@ -497,7 +515,18 @@ class AirQualityApp:
         station_name = station_combo.get()
         pollutant = self.pollutant_combo.get()
 
-        if not station_name or not pollutant:
+        if not station_name:
+            textbox.insert(
+                tk.END,
+                "\nNie wybrano stacji\n"
+            )
+            return
+
+        if not pollutant:
+            textbox.insert(
+                tk.END,
+                "\nNie wybrano parametru\n"
+            )
             return
 
         station_id = self.station_map[station_name]
