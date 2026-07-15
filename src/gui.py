@@ -80,19 +80,55 @@ class AirQualityApp:
             command=self.download_station2
         ).pack(pady=5)
 
+        #self.text = tk.Text(
+         #   self.left_frame,
+          #  height=10,
+           # width=50
+        #)
+        #self.text.pack()
+
+        text_frame = tk.Frame(self.left_frame)
+        text_frame.pack()
+
+        scrollbar = tk.Scrollbar(text_frame)
+
         self.text = tk.Text(
-            self.left_frame,
+            text_frame,
             height=10,
-            width=50
+            width=50,
+            yscrollcommand =scrollbar.set
         )
-        self.text.pack()
+
+        scrollbar.config(command=self.text.yview)
+
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.text.pack(side=tk.LEFT)
+
+        ###############################################
+
+        text_frame2 = tk.Frame(self.right_frame)
+        text_frame2.pack()
+
+        scrollbar2 = tk.Scrollbar(text_frame2)
 
         self.text2 = tk.Text(
-            self.right_frame,
+            text_frame2,
             height=10,
-            width=50
+            width=50,
+            yscrollcommand =scrollbar2.set
         )
-        self.text2.pack()
+
+        scrollbar2.config(command=self.text2.yview)
+
+        scrollbar2.pack(side=tk.RIGHT, fill=tk.Y)
+        self.text2.pack(side=tk.LEFT)
+
+        #self.text2 = tk.Text(
+         #   self.right_frame,
+          #  height=10,
+           # width=50
+        #)
+        #self.text2.pack()
 
         #tk.Button(
          #   self.root,
