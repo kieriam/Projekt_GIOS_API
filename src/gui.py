@@ -10,8 +10,17 @@ from analysis import calculate_stats
 from analysis import compare_stations
 
 class AirQualityApp:
+    """
+    Klasa odpowiedzialna za obsługę  interfejsu graficznego
+    Tworzy okno programu w bibliotece tkinter, umożliwia wybór stacji pomiarowych, pobieranie danych z API GIOŚ,
+    obliczanie statystyk, wizualizacje wyników na wykresach
+    """
 
     def __init__(self):
+        """
+        Inicjalizuje główne elementy interfejsu użytkownika.
+        Tworzy okno aplikacji, pola wyboru przyciski, pola wynikowe(tekstowe)
+        """
         self.root = tk.Tk()
 
         self.root.title("Analiza jakości powietrza")
@@ -89,13 +98,6 @@ class AirQualityApp:
             command=self.download_station2
         ).pack(pady=5)
 
-        #self.text = tk.Text(
-         #   self.left_frame,
-          #  height=10,
-           # width=50
-        #)
-        #self.text.pack()
-
         text_frame = tk.Frame(self.left_frame)
         text_frame.pack()
 
@@ -112,8 +114,6 @@ class AirQualityApp:
 
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.text.pack(side=tk.LEFT)
-
-        ###############################################
 
         text_frame2 = tk.Frame(self.right_frame)
         text_frame2.pack()
@@ -132,19 +132,6 @@ class AirQualityApp:
         scrollbar2.pack(side=tk.RIGHT, fill=tk.Y)
         self.text2.pack(side=tk.LEFT)
 
-        #self.text2 = tk.Text(
-         #   self.right_frame,
-          #  height=10,
-           # width=50
-        #)
-        #self.text2.pack()
-
-        #tk.Button(
-         #   self.root,
-          #  text="Oblicz statystyki",
-           # command=self.calculate_statistics
-        #).pack(pady=10)
-
         tk.Button(
             self.left_frame,
             text="Statystyki stacji 1",
@@ -156,13 +143,6 @@ class AirQualityApp:
             text="statystyki stacji 2",
             command=self.calculate_statistics_station2
         ).pack(pady=5)
-
-        #self.stats_text = tk.Text(
-         #   self.left_frame,
-          #  height=10,
-           # width=50
-        #)
-        #self.stats_text.pack(pady=10)
 
         text_frame3 = tk.Frame(self.left_frame)
         text_frame3.pack()
@@ -180,13 +160,6 @@ class AirQualityApp:
 
         scrollbar3.pack(side=tk.RIGHT, fill=tk.Y)
         self.stats_text.pack(side=tk.LEFT)
-
-        #self.stats_text2 = tk.Text(
-         #   self.right_frame,
-          #  height=10,
-           # width=50
-        #)
-        #self.stats_text2.pack(pady=10)
 
         text_frame4 = tk.Frame(self.right_frame)
         text_frame4.pack()
@@ -227,13 +200,6 @@ class AirQualityApp:
             command= self.compare_statistics
         ).pack(pady=10)
 
-        #self.compare_text = tk.Text(
-         #   self.bottom_frame, 
-          #  width=80,
-           # height=8
-        #)
-        #self.compare_text.pack()
-
         text_frame5 = tk.Frame(self.bottom_frame)
         text_frame5.pack()
 
@@ -264,6 +230,13 @@ class AirQualityApp:
         ).pack(pady=5)
 
     def download_data(self, station_combo, textbox):
+        """
+        Pobiera dane pomiarowe dla wybranej stacji.
+
+        Args:
+            station_combo(ttk.Combobox): Pole wyboru stacji.
+            textbox (tk.Text): Pole tekstowe w którym zostaną wyświetlone dane.
+        """
 
         textbox.delete("1.0", tk.END)
 
@@ -296,6 +269,17 @@ class AirQualityApp:
                 textbox.insert(tk.END,"\n")
 
     def find_sensor(self, station_id,pollutant):
+        """
+        Wyszukuje identyfikator stanowiska pomiarowego dla wybranego parametru.
+        
+        Args: 
+            station_id (int): Identyfikator stacji.
+            pollutant (str): Kod zanieczyszczenia.
+
+        Returns:
+            int: Identyfikator stanowiska pomiarowego.
+            None: Jeżeli parametr nie istnieje na stacji.
+        """
         sensors = get_sensors(station_id)
 
         for sensor in sensors:
@@ -305,6 +289,10 @@ class AirQualityApp:
         return None
 
     def compare_two_stations(self):
+        """
+        Tworzy wykres porównujacy wybrany parametr dla dwóch stacji pomiarowych
+
+        """
 
         station1_name = self.station_combo.get()
         station2_name = self.station2_combo.get()
@@ -359,6 +347,13 @@ class AirQualityApp:
 
 
     def calculate_statistics(self, station_combo, textbox):
+        """
+        Oblicza statystyki dla wszystkich dostępnych parametrów wybranej stacji.
+
+        Args:
+            station_combo (ttk.Combobox): Pole wyboru stacji.
+            textbox (tk.Text): Pole tekstowe do wyświetlenia wyników.
+        """
         station_name = station_combo.get()
 
         if not station_name:
@@ -397,30 +392,48 @@ class AirQualityApp:
                 )
 
     def calculate_statistics_station1(self):
+        """
+        Oblicza statystyki dla pierwszej wybranej stacji
+        i wyświetla wyniki w odpowiednim polu tekstowym.
+        """
         self.calculate_statistics(
             self.station_combo,
             self.stats_text
         )
 
     def calculate_statistics_station2(self):
+        """
+        Oblicza statystyki dla drugiej wybranej stacji
+        i wyświetla wyniki w odpowiednim polu tekstowym.
+        """
         self.calculate_statistics(
             self.station2_combo,
             self.stats_text2
         )
 
     def download_station1(self):
+        """
+        Pobiera dane dla pierwszej wybranej stacji.
+        """
         self.download_data(
             self.station_combo,
             self.text
         )
 
     def download_station2(self):
+        """
+        Pobiera dane dla drugiej wybranej stacji.
+        """
         self.download_data(
             self.station2_combo,
             self.text2
         )
 
     def compare_statistics(self):
+        """
+        Porównuje statystyki dla dwóch wybranych stacji.
+        Dla każdego ze wspólnych parametrów są obliczane statystyki i wyświetlane obok siebie
+        """
 
         self.compare_text.delete("1.0", tk.END)
 
@@ -473,6 +486,13 @@ class AirQualityApp:
                 )
 
     def plot_station(self, station_combo, textbox):
+        """
+        Tworzy wykres zmian wybranego zanieczyszczenia dla konkretnej stacji.
+
+        Args:
+            station_combo (ttk.combobox): Pole wyboru stacji.
+            texbox (tk.Text): Pole tekstowe do wyświetlania komunikatów
+        """
 
         station_name = station_combo.get()
         pollutant = self.pollutant_combo.get()
@@ -532,16 +552,25 @@ class AirQualityApp:
         plt.show()
 
     def plot_station1(self):
+        """
+        Wyswietla wykres dla pierwszej stacji.
+        """
         self.plot_station(
             self.station_combo,
             self.text
         )
 
     def plot_station2(self):
+        """
+        Wyswietla wykres dla drugiej stacji.
+        """
         self.plot_station(
             self.station2_combo,
             self.text2
         )
 
     def run(self):
+        """
+        uruchamia główną pętne aplikacji trinker
+        """
         self.root.mainloop()
