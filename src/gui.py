@@ -25,8 +25,17 @@ class AirQualityApp:
         self.right_frame = tk.Frame(self.root)
         self.right_frame.grid(row=0, column = 1, padx=10, pady=10)
 
+        self.bottom_mini_frame = tk.Frame(self.root)
+        self.bottom_mini_frame.grid(row=1, column = 0,columnspan=2, padx=10, pady=10)
+
+        self.left_mini_frame = tk.Frame(self.root)
+        self.left_mini_frame.grid(row=2, column = 0, padx=10, pady=10)
+
+        self.right_mini_frame = tk.Frame(self.root)
+        self.right_mini_frame.grid(row=2, column = 1, padx=10, pady=10)
+
         self.bottom_frame = tk.Frame(self.root)
-        self.bottom_frame.grid(row=1, column = 0,columnspan=2, padx=10, pady=10)
+        self.bottom_frame.grid(row=3, column = 0,columnspan=2, padx=10, pady=10)
 
         self.station_map = dict(
             zip(
@@ -62,7 +71,7 @@ class AirQualityApp:
         self.station2_combo.pack()
 
         tk.Label(
-            self.bottom_frame,
+            self.bottom_mini_frame,
             text = "Wybierz parametr do wykresu"
         ).pack()
 
@@ -148,22 +157,57 @@ class AirQualityApp:
             command=self.calculate_statistics_station2
         ).pack(pady=5)
 
+        #self.stats_text = tk.Text(
+         #   self.left_frame,
+          #  height=10,
+           # width=50
+        #)
+        #self.stats_text.pack(pady=10)
+
+        text_frame3 = tk.Frame(self.left_frame)
+        text_frame3.pack()
+
+        scrollbar3 = tk.Scrollbar(text_frame3)
+
         self.stats_text = tk.Text(
-            self.left_frame,
+            text_frame3,
             height=10,
-            width=50
+            width=50,
+            yscrollcommand =scrollbar3.set
         )
-        self.stats_text.pack(pady=10)
+
+        scrollbar3.config(command=self.stats_text.yview)
+
+        scrollbar3.pack(side=tk.RIGHT, fill=tk.Y)
+        self.stats_text.pack(side=tk.LEFT)
+
+        #self.stats_text2 = tk.Text(
+         #   self.right_frame,
+          #  height=10,
+           # width=50
+        #)
+        #self.stats_text2.pack(pady=10)
+
+        text_frame4 = tk.Frame(self.right_frame)
+        text_frame4.pack()
+
+        scrollbar4 = tk.Scrollbar(text_frame4)
 
         self.stats_text2 = tk.Text(
-            self.right_frame,
+            text_frame4,
             height=10,
-            width=50
+            width=50,
+            yscrollcommand =scrollbar4.set
         )
-        self.stats_text2.pack(pady=10)
+
+        scrollbar4.config(command=self.stats_text2.yview)
+
+        scrollbar4.pack(side=tk.RIGHT, fill=tk.Y)
+        self.stats_text2.pack(side=tk.LEFT)
+
 
         self.pollutant_combo =ttk.Combobox(
-            self.bottom_frame,
+            self.bottom_mini_frame,
             values = ["PM10","PM2.5","NO2","NO","NOx","O3","SO2","CO","C6H6","BaP(PM10)"],
             width=60
         )
@@ -183,21 +227,38 @@ class AirQualityApp:
             command= self.compare_statistics
         ).pack(pady=10)
 
+        #self.compare_text = tk.Text(
+         #   self.bottom_frame, 
+          #  width=80,
+           # height=8
+        #)
+        #self.compare_text.pack()
+
+        text_frame5 = tk.Frame(self.bottom_frame)
+        text_frame5.pack()
+
+        scrollbar5 = tk.Scrollbar(text_frame5)
+
         self.compare_text = tk.Text(
-            self.bottom_frame, 
+            text_frame5,
+            height=10,
             width=80,
-            height=8
+            yscrollcommand =scrollbar5.set
         )
-        self.compare_text.pack()
+
+        scrollbar5.config(command=self.compare_text.yview)
+
+        scrollbar5.pack(side=tk.RIGHT, fill=tk.Y)
+        self.compare_text.pack(side=tk.LEFT)
 
         tk.Button(
-            self.left_frame,
+            self.left_mini_frame,
             text="Wykres stacji 1",
             command=self.plot_station1
         ).pack(pady=5)
 
         tk.Button(
-            self.right_frame,
+            self.right_mini_frame,
             text="Wykres stacji 2",
             command=self.plot_station2
         ).pack(pady=5)
