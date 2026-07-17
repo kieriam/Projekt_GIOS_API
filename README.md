@@ -1,6 +1,6 @@
 # Analiza jakości powietrza z wykorzystaniem API GIOŚ
 
-* ## Spis treści
+## Spis treści
 * ### Opis projektu
 * ### Funkcjonalności
 * ### Wykorzystane biblioteki
