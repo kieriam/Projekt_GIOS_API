@@ -36,7 +36,7 @@ Projekt wykonany w ramach zaliczenia zajęć zaawansowane programowanie w język
 * matplotlib
 
 ## Struktura projektu
-'''
+'''text
 ├── README.md
 ├── requirements.txt
 └── src
