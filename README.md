@@ -36,6 +36,7 @@ Projekt wykonany w ramach zaliczenia zajęć zaawansowane programowanie w język
 * matplotlib
 
 ## Struktura projektu
+'''
 ├── README.md
 ├── requirements.txt
 └── src
@@ -43,6 +44,7 @@ Projekt wykonany w ramach zaliczenia zajęć zaawansowane programowanie w język
     ├── api.py
     ├── gui.py
     └── main.py
+'''
 
 ## Uruchamianie
 
