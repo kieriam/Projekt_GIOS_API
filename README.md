@@ -46,7 +46,7 @@ Projekt wykonany w ramach zaliczenia zajęć zaawansowane programowanie w język
     └── main.py
 ```
 
-## Uruchamianie
+## Uruchamianie (wsl ubuntu)
 
 * Sklonuj repozytorium
 git clone git@github.com:kieriam/Projekt_GIOS_API.git
