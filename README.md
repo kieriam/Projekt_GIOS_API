@@ -1,12 +1,12 @@
 # Analiza jakości powietrza z wykorzystaniem API GIOŚ
 
-## Spis treści
-### Opis projektu
-### Funkcjonalności
-### Wykorzystane biblioteki
-### Struktura projektu
-### Uruchamianie
-### Źródło dancyh
+* ## Spis treści
+* ### Opis projektu
+* ### Funkcjonalności
+* ### Wykorzystane biblioteki
+* ### Struktura projektu
+* ### Uruchamianie
+* ### Źródło dancyh
 
 ## Opis projektu
 
