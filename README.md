@@ -48,18 +48,18 @@ Projekt wykonany w ramach zaliczenia zajęć zaawansowane programowanie w język
 
 ## Uruchamianie (wsl ubuntu)
 
-* Sklonuj repozytorium
+* Sklonuj repozytorium:
 git clone git@github.com:kieriam/Projekt_GIOS_API.git
 
-* Przejdź do głównego katalogu projektu
+* Przejdź do głównego katalogu projektu:
 cd Projekt_GIOS_API/
 
-* Zainstaluj wymagane bibioteki
+* Zainstaluj wymagane bibioteki:
 python3 -m venv  .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-* Uruchom skrypt main.py
+* Uruchom skrypt main.py:
 python3 src/main.py
 
 ## Źródło danych
